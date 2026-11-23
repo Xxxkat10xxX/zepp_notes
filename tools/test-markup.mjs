@@ -35,3 +35,28 @@ assert.match(hashKey('x'), /^[0-9a-z]+$/)
 assert.equal(previewOf('# T\n$$x$$ ![](u) [pdf](p)'), 'T ∑ 🖼 PDF')
 
 console.log('markup tests passed:', b.length, 'blocks')
+
+// --- ссылки облачных дисков и вписывание размеров ---
+const { directLink, fitBox, weservBoxUrl } = await import('../shared/sources.js')
+assert.equal(
+  directLink('https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view?usp=sharing').url,
+  'https://drive.google.com/uc?export=download&id=1AbCdEfGhIjKlMnOp',
+)
+assert.equal(
+  directLink('https://drive.google.com/open?id=1AbCdEfGhIjKlMnOp').url,
+  'https://drive.google.com/uc?export=download&id=1AbCdEfGhIjKlMnOp',
+)
+assert.equal(
+  directLink('https://www.dropbox.com/scl/fi/abc/cat.jpg?rlkey=xyz&dl=0').url,
+  'https://www.dropbox.com/scl/fi/abc/cat.jpg?rlkey=xyz&raw=1',
+)
+assert.equal(directLink('https://www.dropbox.com/s/abc/cat.jpg').url, 'https://www.dropbox.com/s/abc/cat.jpg?raw=1')
+assert.equal(directLink('https://disk.yandex.ru/i/AbCd123').yandex, true)
+assert.equal(directLink('https://yadi.sk/d/AbCd123').yandex, true)
+assert.equal(directLink('https://example.com/a.jpg').url, 'https://example.com/a.jpg')
+assert.deepEqual(fitBox(1200, 900, 350, 600), { w: 350, h: 263 })
+assert.deepEqual(fitBox(1000, 3000, 350, 600), { w: 200, h: 600 })
+assert.deepEqual(fitBox(100, 50, 350), { w: 100, h: 50 })
+assert.deepEqual(fitBox(612, 792, 350, 0, true), { w: 350, h: 453 })
+assert.match(weservBoxUrl('https://x/y.pdf', 350, 453, 0), /page=0/)
+console.log('source tests passed')

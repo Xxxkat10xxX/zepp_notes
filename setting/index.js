@@ -92,26 +92,33 @@ function listView(storage) {
       'primary',
     ),
 
-    header('Сервер рендеринга (необязательно)'),
-    TextInput({
-      label: 'Адрес сервера',
-      placeholder: 'http://192.168.1.10:8787',
-      value: storage.getItem(KEY_SERVER) || '',
-      onChange: (v) => storage.setItem(KEY_SERVER, String(v || '').trim()),
-    }),
-    hint(
-      'Без сервера: LaTeX рендерится через latex.codecogs.com, фото — через images.weserv.nl. ' +
-        'PDF требует свой сервер (tools/render_server.py из репозитория).',
-    ),
-
     header('Синтаксис'),
     hint('# Заголовок'),
     hint('$$ \\int_0^1 x^2\\,dx = \\frac13 $$ — формула'),
     hint('$E=mc^2$ — короткая формула'),
-    hint('![подпись](https://site/photo.jpg) — фото'),
-    hint('[pdf](https://site/doc.pdf) — PDF целиком (до 30 стр.)'),
-    hint('[pdf:3-5](https://site/doc.pdf) — страницы 3–5'),
+    hint('![подпись](ссылка) — фото'),
+    hint('[pdf](ссылка) — PDF целиком (до 30 стр.)'),
+    hint('[pdf:3-5](ссылка) — страницы 3–5'),
     hint('\\$ — знак доллара'),
+
+    header('Фото и PDF с телефона'),
+    hint(
+      'Откройте файл в Галерее / Файлах → «Поделиться» → Google Диск, Яндекс Диск или Dropbox. ' +
+        'Включите доступ «по ссылке», скопируйте ссылку и вставьте её в поле «+ Фото» или «+ PDF». ' +
+        'Ссылки «Поделиться» превращаются в прямые автоматически.',
+    ),
+
+    header('Сервер рендеринга (не нужен)'),
+    hint(
+      'По умолчанию всё рисуют latex.codecogs.com и images.weserv.nl. ' +
+        'Своё поле нужно, только если вы подняли tools/render_server.py (например, в Termux).',
+    ),
+    TextInput({
+      label: 'Адрес своего сервера (оставьте пустым)',
+      placeholder: 'http://127.0.0.1:8787',
+      value: storage.getItem(KEY_SERVER) || '',
+      onChange: (v) => storage.setItem(KEY_SERVER, String(v || '').trim()),
+    }),
     Text({ paragraph: true, style: { fontSize: '12px', color: '#aaa', margin: '12px 0' } }, [
       storage.getItem(KEY_STATUS) || '',
     ]),
@@ -151,18 +158,18 @@ function editView(storage, note) {
       onChange: (v) => v && appendToBody(storage, note, '$$ ' + v + ' $$'),
     }),
     TextInput({
-      label: '+ Фото (ссылка на картинку)',
-      placeholder: 'https://…/photo.jpg',
+      label: '+ Фото (ссылка)',
+      placeholder: 'ссылка на картинку, Google/Яндекс Диск, Dropbox',
       value: '',
       onChange: (v) => v && appendToBody(storage, note, '![](' + String(v).trim() + ')'),
     }),
     TextInput({
       label: '+ PDF (ссылка)',
-      placeholder: 'https://…/file.pdf',
+      placeholder: 'ссылка на PDF, Google/Яндекс Диск, Dropbox',
       value: '',
       onChange: (v) => v && appendToBody(storage, note, '[pdf](' + String(v).trim() + ')'),
     }),
-    hint('Фото из галереи: загрузите его в облако/хостинг картинок и вставьте прямую ссылку.'),
+    hint('Фото из галереи: «Поделиться» → облачный диск → скопировать ссылку → вставить сюда.'),
 
     btn(
       'Удалить заметку',

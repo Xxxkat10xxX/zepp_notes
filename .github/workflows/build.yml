@@ -1,0 +1,82 @@
+name: Build watch app
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g @zeppos/zeus-cli
+          npm install --no-save jszip@3 qrcode@1
+
+      - name: Tests
+        run: npm test
+
+      - name: Build (zeus)
+        run: zeus build
+
+      - name: Package for Cheetah Square + install page
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.event.repository.name }}"
+          node tools/ci-package.mjs \
+            "https://${OWNER}.github.io/${REPO}/" \
+            "https://github.com/${{ github.repository }}/releases/download/latest-build/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zepp-notes
+          path: site/
+
+      - name: Publish release "latest-build"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-build
+          name: Последняя сборка
+          prerelease: true
+          make_latest: false
+          body: |
+            Сборка из ветки `${{ github.ref_name }}` (${{ github.sha }}).
+            Установка: Zepp → Режим разработчика → сканер → QR ниже (или страница GitHub Pages репозитория).
+
+            ![QR](https://github.com/${{ github.repository }}/releases/download/latest-build/qr-release.png)
+          files: |
+            site/cheetah-square.zip
+            site/zepp-notes.zab
+            site/qr-release.png
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref_name == github.event.repository.default_branch
+        with:
+          path: site/
+
+  pages:
+    needs: build
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
