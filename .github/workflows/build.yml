@@ -74,6 +74,8 @@ jobs:
     needs: build
     if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
+    # пока GitHub Pages не включён в настройках, этот шаг не должен "краснить" сборку
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
