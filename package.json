@@ -1,0 +1,16 @@
+{
+  "name": "zepp-notes",
+  "version": "1.0.0",
+  "description": "Notes for Zepp OS (Amazfit Cheetah Square) with LaTeX, photos and PDF pages",
+  "main": "app.js",
+  "scripts": {
+    "test": "node tools/test-markup.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@zeppos/zml": "0.0.27"
+  },
+  "devDependencies": {
+    "@zeppos/device-types": "^3.0.0"
+  }
+}

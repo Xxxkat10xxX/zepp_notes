@@ -1,0 +1,33 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 1099001,
+    "appName": "Notes",
+    "appType": "app",
+    "version": { "code": 1, "name": "1.0.0" },
+    "icon": "icon.png",
+    "vender": "zepp-notes",
+    "description": "Notes with LaTeX, photos and PDF"
+  },
+  "permissions": ["data:os.device.info", "device:os.local_storage"],
+  "runtime": {
+    "apiVersion": { "compatible": "3.0", "target": "3.0", "minVersion": "3.0" }
+  },
+  "debug": false,
+  "targets": {
+    "common": {
+      "module": {
+        "page": { "pages": ["page/index", "page/note"] },
+        "app-side": { "path": "app-side/index" },
+        "setting": { "path": "setting/index" }
+      },
+      "platforms": [{ "st": "s", "dw": 390 }],
+      "designWidth": 390
+    }
+  },
+  "i18n": {
+    "ru-RU": { "appName": "Заметки" },
+    "en-US": { "appName": "Notes" }
+  },
+  "defaultLanguage": "en-US"
+}
