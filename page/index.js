@@ -48,7 +48,7 @@ Page(
       const notes = loadNotes()
       if (!notes.length) {
         col.text(
-          'Заметок пока нет.\nСоздайте их в приложении Zepp:\nПрофиль → устройство → Приложения → Заметки → Настройки.',
+          'Заметок пока нет.\nПоложите .md, PDF или фото в папку ZeppNotes на телефоне или создайте заметку в настройках приложения в Zepp.',
           { size: 24, color: COLORS.sub, align: ui.align.CENTER_H },
         )
         col.gap(16)
@@ -99,7 +99,8 @@ Page(
         })
         .catch((e) => {
           this.state.syncing = false
-          this.setStatus('Нет связи с телефоном — показаны сохранённые', true)
+          const msg = e && e.message ? e.message : 'Нет связи с телефоном'
+          this.setStatus(msg + ' · показаны сохранённые', true)
           console.log('sync error', JSON.stringify(e))
         })
     },

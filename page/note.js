@@ -167,9 +167,9 @@ Page(
           saveNotes(loadNotes().filter((n) => n.id !== id))
           back()
         })
-        .catch(() => {
+        .catch((e) => {
           this.state.armedDelete = false
-          toast('Телефон недоступен — удаление невозможно')
+          toast(e && e.message ? e.message : 'Телефон недоступен — удаление невозможно')
           this.render()
         })
     },

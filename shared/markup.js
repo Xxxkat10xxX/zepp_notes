@@ -4,16 +4,16 @@
 //   # Заголовок            — строка-заголовок
 //   $$ ... $$              — формула LaTeX (может быть многострочной)
 //   $ ... $                — короткая формула LaTeX (рендерится отдельной картинкой)
-//   ![подпись](https://...) — фотография по ссылке
-//   [pdf](https://...)     — все страницы PDF (до MAX_PDF_PAGES)
-//   [pdf:2-5](https://...) — страницы 2..5 PDF
+//   ![подпись](file:фото.jpg)  — фото из папки ZeppNotes на телефоне
+//   [pdf](file:лекция.pdf)     — все страницы PDF (до MAX_PDF_PAGES)
+//   [pdf:2-5](file:лекция.pdf) — страницы 2..5 PDF
 //   \$                     — буквальный знак доллара
 //   всё остальное          — обычный текст
 
 export const MAX_PDF_PAGES = 30
 
 const TOKEN_RE =
-  /\$\$([\s\S]+?)\$\$|!\[([^\]]*)\]\(([^)\s]+)\)|\[pdf(?::(\d+)(?:-(\d+))?)?\]\(([^)\s]+)\)|\$([^$\n]+?)\$/g
+  /\$\$([\s\S]+?)\$\$|!\[([^\]]*)\]\(([^)\n]+)\)|\[pdf(?::(\d+)(?:-(\d+))?)?\]\(([^)\n]+)\)|\$([^$\n]+?)\$/g
 
 function restore(s) {
   return s.replace(/\u0001/g, '\\$')
@@ -57,11 +57,11 @@ export function parseNote(body) {
     if (m[1] !== undefined) {
       blocks.push({ t: 'latex', v: restore(m[1]).trim(), display: true })
     } else if (m[3] !== undefined) {
-      blocks.push({ t: 'photo', url: m[3], alt: m[2] || '' })
+      blocks.push({ t: 'photo', url: m[3].trim(), alt: m[2] || '' })
     } else if (m[6] !== undefined) {
       const from = m[4] ? parseInt(m[4], 10) : 1
       const to = m[5] ? parseInt(m[5], 10) : m[4] ? from : from + MAX_PDF_PAGES - 1
-      blocks.push({ t: 'pdf', url: m[6], from, to: Math.min(to, from + MAX_PDF_PAGES - 1) })
+      blocks.push({ t: 'pdf', url: m[6].trim(), from, to: Math.min(to, from + MAX_PDF_PAGES - 1) })
     } else if (m[7] !== undefined) {
       blocks.push({ t: 'latex', v: restore(m[7]).trim(), display: false })
     }

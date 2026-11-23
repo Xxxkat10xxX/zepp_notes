@@ -92,29 +92,31 @@ function listView(storage) {
       'primary',
     ),
 
+    header('Файлы с телефона (офлайн)'),
+    hint(
+      'Всё работает без интернета. Положите файлы в папку «ZeppNotes» во внутренней памяти ' +
+        '(через «Файлы» или «Поделиться → Сохранить»):',
+    ),
+    hint('• лекция.pdf — станет заметкой со страницами PDF'),
+    hint('• фото.jpg — станет заметкой-фото'),
+    hint('• конспект.md / .txt — текстовая заметка с формулами (первая строка «# …» — заголовок)'),
+    hint(
+      'Картинки, формулы и PDF рисует рендерер в Termux на этом же телефоне. ' +
+        'Он должен быть запущен во время синхронизации (команда zepp-notes в Termux).',
+    ),
+
     header('Синтаксис'),
     hint('# Заголовок'),
     hint('$$ \\int_0^1 x^2\\,dx = \\frac13 $$ — формула'),
     hint('$E=mc^2$ — короткая формула'),
-    hint('![подпись](ссылка) — фото'),
-    hint('[pdf](ссылка) — PDF целиком (до 30 стр.)'),
-    hint('[pdf:3-5](ссылка) — страницы 3–5'),
+    hint('![подпись](file:фото.jpg) — фото из папки ZeppNotes'),
+    hint('[pdf](file:лекция.pdf) — PDF целиком (до 30 стр.)'),
+    hint('[pdf:31-60](file:лекция.pdf) — страницы 31–60'),
     hint('\\$ — знак доллара'),
 
-    header('Фото и PDF с телефона'),
-    hint(
-      'Откройте файл в Галерее / Файлах → «Поделиться» → Google Диск, Яндекс Диск или Dropbox. ' +
-        'Включите доступ «по ссылке», скопируйте ссылку и вставьте её в поле «+ Фото» или «+ PDF». ' +
-        'Ссылки «Поделиться» превращаются в прямые автоматически.',
-    ),
-
-    header('Сервер рендеринга (не нужен)'),
-    hint(
-      'По умолчанию всё рисуют latex.codecogs.com и images.weserv.nl. ' +
-        'Своё поле нужно, только если вы подняли tools/render_server.py (например, в Termux).',
-    ),
+    header('Адрес рендерера'),
     TextInput({
-      label: 'Адрес своего сервера (оставьте пустым)',
+      label: 'Адрес (пусто = http://127.0.0.1:8787)',
       placeholder: 'http://127.0.0.1:8787',
       value: storage.getItem(KEY_SERVER) || '',
       onChange: (v) => storage.setItem(KEY_SERVER, String(v || '').trim()),
@@ -158,18 +160,18 @@ function editView(storage, note) {
       onChange: (v) => v && appendToBody(storage, note, '$$ ' + v + ' $$'),
     }),
     TextInput({
-      label: '+ Фото (ссылка)',
-      placeholder: 'ссылка на картинку, Google/Яндекс Диск, Dropbox',
+      label: '+ Фото (имя файла в папке ZeppNotes)',
+      placeholder: 'фото.jpg',
       value: '',
-      onChange: (v) => v && appendToBody(storage, note, '![](' + String(v).trim() + ')'),
+      onChange: (v) => v && appendToBody(storage, note, '![](file:' + String(v).trim() + ')'),
     }),
     TextInput({
-      label: '+ PDF (ссылка)',
-      placeholder: 'ссылка на PDF, Google/Яндекс Диск, Dropbox',
+      label: '+ PDF (имя файла в папке ZeppNotes)',
+      placeholder: 'лекция.pdf',
       value: '',
-      onChange: (v) => v && appendToBody(storage, note, '[pdf](' + String(v).trim() + ')'),
+      onChange: (v) => v && appendToBody(storage, note, '[pdf](file:' + String(v).trim() + ')'),
     }),
-    hint('Фото из галереи: «Поделиться» → облачный диск → скопировать ссылку → вставить сюда.'),
+    hint('Сначала скопируйте фото / PDF в папку ZeppNotes, затем впишите сюда имя файла.'),
 
     btn(
       'Удалить заметку',
